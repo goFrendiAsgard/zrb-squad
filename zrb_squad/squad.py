@@ -1,5 +1,7 @@
 from zrb import AnyTask, AnyGroup, CmdTask, LLMChatTask, cli, Group, CFG
 from zrb.util.string.conversion import to_kebab_case
+from .board.any_board import AnyBoard
+from .board.factory import create_board
 
 
 class Member:
@@ -33,6 +35,8 @@ class Squad:
         self,
         name: str,
         members: list[Member],
+        board: AnyBoard | None = None,
+        main_agent: str | None = None,
         group_name: str | None = None,
         group_description: str | None = None,
     ):
@@ -42,11 +46,15 @@ class Squad:
         Args:
             name: Name of the squad
             members: List of Member objects, each with a name and chat_task
+            board: Optional board instance (defaults to FileBoard if None)
+            main_agent: Name of the main agent (defaults to first member if None)
             group_name: Optional name for the group (defaults to kebab-case of squad name)
             group_description: Optional description for the group
         """
         self.name = name
         self.members = members
+        self.board = board if board is not None else create_board()
+        self.main_agent = main_agent if main_agent is not None else members[0].name
         self.group_name = to_kebab_case(group_name) if group_name is not None else to_kebab_case(name)
         self.group_description = group_description
         self.session_name = f"zrb-squad-{name}"
@@ -64,6 +72,12 @@ class Squad:
         Returns:
             The created squad task
         """
+        # Add board tools and triggers to each member
+        self._add_board_tools_and_triggers()
+        
+        # Add squad member list tool to each member
+        self._add_squad_member_tool()
+        
         # Create the main group
         main_group = cli.add_group(Group(
             name=self.group_name, 
@@ -97,17 +111,90 @@ class Squad:
         """Validate that the squad has at least one member."""
         if not self.members:
             raise ValueError("Squad must have at least one member")
+        
+        # Validate main_agent exists in members
+        member_names = [member.name for member in self.members]
+        if self.main_agent not in member_names:
+            raise ValueError(f"Main agent '{self.main_agent}' not found in squad members: {member_names}")
+    
+    def _add_board_tools_and_triggers(self) -> None:
+        """Add board tools and triggers to each member's chat task."""
+        for member in self.members:
+            # Add board tools
+            board_tools = self.board.create_tools(member.name)
+            for tool in board_tools:
+                member.chat_task.add_tool(tool)
+            
+            # Add board triggers
+            board_triggers = self.board.create_triggers(member.name)
+            for trigger in board_triggers:
+                member.chat_task.add_trigger(trigger)
+    
+    def _add_squad_member_tool(self) -> None:
+        """Add a tool to each member that lists all squad members."""
+        member_names = [member.name for member in self.members]
+        squad_name = self.name
+        main_agent = self.main_agent
+        
+        # Add this tool to each member
+        for member in self.members:
+            # Create a tool specific to this member using a factory function
+            # that captures the current member's name in a closure
+            member_tool = self._create_squad_member_tool_for_agent(
+                agent_name=member.name,
+                squad_name=squad_name,
+                main_agent=main_agent,
+                all_members=member_names
+            )
+            member.chat_task.add_tool(member_tool)
+    
+    def _create_squad_member_tool_for_agent(
+        self, 
+        agent_name: str, 
+        squad_name: str,
+        main_agent: str,
+        all_members: list[str]
+    ) -> callable:
+        """Create a squad member listing tool for a specific agent."""
+        def list_squad_members() -> dict:
+            """
+            List all members in your squad.
+            
+            Returns:
+                Dictionary with squad information
+            """
+            return {
+                "success": True,
+                "squad_name": squad_name,
+                "main_agent": main_agent,
+                "your_name": agent_name,
+                "members": all_members,
+                "total_members": len(all_members)
+            }
+        
+        list_squad_members.__name__ = f"list_squad_members"
+        list_squad_members.__doc__ = f"List all members in your squad. You are {agent_name}."
+        return list_squad_members
     
     def _create_squad_task(self) -> CmdTask:
         """Create the CmdTask that starts the squad."""
         full_cmd = self._build_tmux_commands()
+        
+        # Add a message about assigning initial task
+        cmd_with_message = self._add_initial_task_message(full_cmd)
+        
         return CmdTask(
             name=f"start-{self.name}",
             description=f"Start {self.name} squad with {len(self.members)} members",
-            cmd=full_cmd,
+            cmd=cmd_with_message,
             is_interactive=True,
             render_cmd=False
         )
+    
+    def _add_initial_task_message(self, original_cmd: str) -> str:
+        """Add a message about assigning initial task to the main agent."""
+        message = f'echo "🚀 Starting {self.name} squad with {len(self.members)} members..."\n'
+        return message + original_cmd
     
     def _build_tmux_commands(self) -> str:
         """Build the complete tmux command script."""

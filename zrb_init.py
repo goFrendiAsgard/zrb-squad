@@ -9,6 +9,23 @@ dev_squad = Squad(
     name="dev-team",
     members=[
         Member(
+            name="tech-lead",
+            chat_task=LLMChatTask(
+                name="tech-lead",
+                ui_ascii_art="default",
+                ui_jargon="Leading the tech revolution",
+                ui_assistant_name="Tech Lead",
+                prompt_manager=PromptManager(
+                    prompts=[
+                        new_prompt(get_persona_prompt("Tech Lead")),
+                        new_prompt(get_mandate_prompt()),
+                        system_context,
+                    ]
+                ),
+                tools=[read_file, list_files, write_file, run_shell_command]
+            ),
+        ),
+        Member(
             name="coder",
             chat_task=LLMChatTask(
                 name="coder",
@@ -60,6 +77,7 @@ dev_squad = Squad(
             ),
         ), 
     ],
+    main_agent="tech-lead",
     group_description="🤝 Multi-agent squad workflows",
 )
 dev_squad_task = dev_squad.serve()
