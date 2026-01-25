@@ -16,14 +16,11 @@ This is a prototype extension. To use it:
 
 ## Usage
 
-### Basic Example
+### Using the Squad Class (Recommended)
 
 ```python
 from zrb import Group, LLMChatTask, StrInput
-from zrb_squad import define_squad, Member
-
-# Create a group for your squad
-squad_group = Group("my-squad", description="My agent squad")
+from zrb_squad import Squad, Member
 
 # Create chat tasks for different roles
 coder = LLMChatTask(
@@ -48,14 +45,15 @@ members = [
     Member(name="tester", chat_task=tester),
 ]
 
-# Define the squad
-define_squad(
-    squad_name="dev-team",
+# Create and serve the squad
+squad = Squad(
+    name="dev-team",
     members=members,
-    group_description="My agent squad
+    group_description="My agent squad"
 )
-
+squad.serve()
 ```
+
 
 ### Running the Squad
 
@@ -70,6 +68,74 @@ This will:
 2. Split it into multiple panes (one for each squad member)
 3. Start each member's chat task in its own pane
 4. Attach to the tmux session
+
+## API Reference
+
+### `Squad` Class
+
+The main class for creating and managing squads:
+
+```python
+class Squad:
+    def __init__(
+        self,
+        name: str,
+        members: list[Member],
+        group_name: str | None = None,
+        group_description: str | None = None,
+    ):
+        """
+        Initialize a new squad.
+        
+        Args:
+            name: Name of the squad
+            members: List of Member objects, each with a name and chat_task
+            group_name: Optional name for the group (defaults to kebab-case of squad name)
+            group_description: Optional description for the group
+        """
+    
+    def serve(self) -> AnyTask:
+        """
+        Create and register the squad task.
+        
+        Returns:
+            The created squad task
+        """
+    
+    @property
+    def task(self) -> Optional[AnyTask]:
+        """Get the squad task (only available after serve() is called)."""
+```
+
+### `Member` Class
+
+```python
+class Member:
+    def __init__(self, name: str, chat_task: LLMChatTask):
+        """
+        Represents a member in a squad.
+        
+        Args:
+            name: Name of the member (displayed in tmux pane title)
+            chat_task: The LLMChatTask instance for this member
+        """
+```
+
+### `define_squad()` Function (Legacy)
+
+```python
+def define_squad(
+    squad_name: str,
+    members: list[Member],
+    group_name: str | None = None,
+    group_description: str | None = None,
+) -> AnyTask:
+    """
+    Define a squad of AI agents that run in parallel tmux panels.
+    
+    This is a backward compatibility function. For new code, use the Squad class.
+    """
+```
 
 ## How It Works
 
