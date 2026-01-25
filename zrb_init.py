@@ -1,8 +1,14 @@
-from zrb import cli, Group, LLMChatTask, StrInput, BoolInput, CFG
-from zrb.llm.prompt import PromptManager, new_prompt, get_mandate_prompt, get_persona_prompt, system_context
-from zrb.llm.tool import run_shell_command, read_file, list_files, write_file
-from zrb_squad import Squad, Member
+from zrb import CFG, BoolInput, Group, LLMChatTask, StrInput, cli
+from zrb.llm.prompt import (
+    PromptManager,
+    get_mandate_prompt,
+    get_persona_prompt,
+    new_prompt,
+    system_context,
+)
+from zrb.llm.tool import list_files, read_file, run_shell_command, write_file
 
+from zrb_squad import Member, Squad
 
 # Define the development squad using the new Squad class
 dev_squad = Squad(
@@ -22,7 +28,7 @@ dev_squad = Squad(
                         system_context,
                     ]
                 ),
-                tools=[read_file, list_files, write_file, run_shell_command]
+                tools=[read_file, list_files, write_file, run_shell_command],
             ),
         ),
         Member(
@@ -39,7 +45,7 @@ dev_squad = Squad(
                         system_context,
                     ]
                 ),
-                tools=[read_file, list_files, write_file, run_shell_command]
+                tools=[read_file, list_files, write_file, run_shell_command],
             ),
         ),
         Member(
@@ -56,7 +62,7 @@ dev_squad = Squad(
                         system_context,
                     ]
                 ),
-                tools=[read_file, list_files, write_file, run_shell_command]
+                tools=[read_file, list_files, write_file, run_shell_command],
             ),
         ),
         Member(
@@ -73,9 +79,9 @@ dev_squad = Squad(
                         system_context,
                     ]
                 ),
-                tools=[read_file, list_files, write_file, run_shell_command]
+                tools=[read_file, list_files, write_file, run_shell_command],
             ),
-        ), 
+        ),
     ],
     main_agent="tech-lead",
     group_description="🤝 Multi-agent squad workflows",
