@@ -1,1 +1,11 @@
-[]
+[
+  {
+    "task_id": "e929c50a-7cdc-4d6a-8eeb-a16f80dc4e20",
+    "assignee": "coder",
+    "assigner": "tech-lead",
+    "description": "Build Fibonacci Clock: Create a Fibonacci clock application. The Fibonacci clock is a unique timepiece that uses the Fibonacci sequence to represent time. Typically, it uses squares of sizes corresponding to Fibonacci numbers (1, 1, 2, 3, 5) to display hours and minutes. The clock should:\n1. Display current time using the Fibonacci sequence representation\n2. Have a visual interface showing the Fibonacci squares\n3. Differentiate between hours and minutes (e.g., using different colors)\n4. Update in real-time\n5. Include clear documentation on how to read the clock\n\nThe implementation can be in any appropriate technology (web-based with HTML/CSS/JS, Python with GUI, etc.) based on what's suitable for the project context.",
+    "is_completed": false,
+    "created_at": 1769357228.3797078,
+    "completed_at": null
+  }
+]
