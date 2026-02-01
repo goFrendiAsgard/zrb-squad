@@ -17,6 +17,11 @@ class AnyBoard(ABC):
     """
 
     @abstractmethod
+    def set_valid_members(self, members: list[str]) -> None:
+        """Set the list of valid member names for validation."""
+        pass
+
+    @abstractmethod
     def assign(
         self, assigner: str, assignee: str, task_name: str, description: str
     ) -> Story:

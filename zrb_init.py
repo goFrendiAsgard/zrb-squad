@@ -1,10 +1,7 @@
-from zrb import CFG, BoolInput, Group, LLMChatTask, StrInput, cli
+from zrb import LLMChatTask
 from zrb.llm.prompt import (
     PromptManager,
-    get_mandate_prompt,
-    get_persona_prompt,
     new_prompt,
-    system_context,
 )
 from zrb.llm.tool import list_files, read_file, run_shell_command, write_file
 
@@ -15,75 +12,96 @@ dev_squad = Squad(
     name="dev-team",
     members=[
         Member(
-            name="tech-lead",
+            name="alice",
             chat_task=LLMChatTask(
-                name="tech-lead",
-                ui_ascii_art="default",
-                ui_jargon="Leading the tech revolution",
-                ui_assistant_name="Tech Lead",
+                name="manager",
+                ui_ascii_art="hello-kitty",
+                ui_jargon="Boss",
+                ui_assistant_name="alice",
                 prompt_manager=PromptManager(
+                    role="orchestrator",
+                    assistant_name="alice",
                     prompts=[
-                        new_prompt(get_persona_prompt("Tech Lead")),
-                        new_prompt(get_mandate_prompt()),
-                        system_context,
-                    ]
+                        new_prompt(
+                            "**IMPORTANT** \n"
+                            "- Once requirement is clear, ask bob (The Planner) to create plan\n"
+                            "- Bob will come up with plan, If you are okay with it, assign charlie and diaz\n"
+                            "- If you are not okay with the plan, ask bob to revise the plan and get assign back to you for approval\n"
+                            "- When assigning tasks to charlie and diaz, be mindful, one task at a time for each of them\n"
+                        )
+                    ],
                 ),
                 tools=[read_file, list_files, write_file, run_shell_command],
+                yolo=True,
             ),
         ),
         Member(
-            name="coder",
+            name="bob",
+            chat_task=LLMChatTask(
+                name="techlead",
+                ui_ascii_art="clover",
+                ui_jargon="Pasti ada jalan",
+                ui_assistant_name="bob",
+                prompt_manager=PromptManager(
+                    role="planner",
+                    assistant_name="bob",
+                    prompts=[
+                        new_prompt(
+                            "**IMPORTANT** \n"
+                            "- Assign alice (Orchestrator) to approve your plan\n"
+                            "- Your plan should be detailed and broken down into actionable tasks, "
+                            "You should also mention who should be responsible to do the task (i.e., charlie for coding, diaz for documenting)\n"
+                        )
+                    ],
+                ),
+                tools=[read_file, list_files, write_file, run_shell_command],
+                yolo=True,
+            ),
+        ),
+        Member(
+            name="charlie",
             chat_task=LLMChatTask(
                 name="coder",
-                ui_ascii_art="panda",
-                ui_jargon="Ngoding sampai mati",
-                ui_assistant_name="Coder",
+                ui_ascii_art="batman",
+                ui_jargon="Kerja kerja kerja",
+                ui_assistant_name="charlie",
                 prompt_manager=PromptManager(
+                    role="executor",
+                    assistant_name="charlie",
                     prompts=[
-                        new_prompt(get_persona_prompt("Coder")),
-                        new_prompt(get_mandate_prompt()),
-                        system_context,
+                        new_prompt(
+                            "**IMPORTANT** \n"
+                            "- You are a senior software engineer\n"
+                            "- Do every task alice assigned to you\n"
+                        )
                     ]
                 ),
                 tools=[read_file, list_files, write_file, run_shell_command],
             ),
         ),
         Member(
-            name="tester",
-            chat_task=LLMChatTask(
-                name="tester",
-                ui_ascii_art="rose",
-                ui_jargon="Bunga didatangi bug",
-                ui_assistant_name="Tester",
-                prompt_manager=PromptManager(
-                    prompts=[
-                        new_prompt(get_persona_prompt("Tester")),
-                        new_prompt(get_mandate_prompt()),
-                        system_context,
-                    ]
-                ),
-                tools=[read_file, list_files, write_file, run_shell_command],
-            ),
-        ),
-        Member(
-            name="documenter",
+            name="diaz",
             chat_task=LLMChatTask(
                 name="documenter",
                 ui_ascii_art="cat",
-                ui_jargon="Miawww",
-                ui_assistant_name="Documenter",
+                ui_jargon="Sie dokumentasi",
+                ui_assistant_name="diaz",
                 prompt_manager=PromptManager(
+                    role="executor",
+                    assistant_name="diaz",
                     prompts=[
-                        new_prompt(get_persona_prompt("Documenter")),
-                        new_prompt(get_mandate_prompt()),
-                        system_context,
+                        new_prompt(
+                            "**IMPORTANT** \n"
+                            "- You are an expert tech writer\n"
+                            "- Do every task alice assigned to you\n"
+                        )
                     ]
                 ),
                 tools=[read_file, list_files, write_file, run_shell_command],
             ),
         ),
     ],
-    main_agent="tech-lead",
+    main_agent="alice",
     group_description="🤝 Multi-agent squad workflows",
 )
 dev_squad_task = dev_squad.serve()

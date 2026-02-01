@@ -8,9 +8,10 @@ from .board.factory import create_board
 class Member:
     """Represents a member in a squad"""
 
-    def __init__(self, name: str, chat_task: LLMChatTask):
+    def __init__(self, name: str, chat_task: LLMChatTask, role: str = ""):
         self.name = name
         self.chat_task = chat_task
+        self.role = role
 
 
 class Squad:
@@ -76,6 +77,10 @@ class Squad:
         Returns:
             The created squad task
         """
+        # Set valid members on the board for validation
+        member_names = [member.name for member in self.members]
+        self.board.set_valid_members(member_names)
+
         # Add board tools and triggers to each member
         self._add_board_tools_and_triggers()
 
@@ -134,7 +139,9 @@ class Squad:
 
     def _add_squad_member_tool(self) -> None:
         """Add a tool to each member that lists all squad members."""
-        member_names = [member.name for member in self.members]
+        member_info = [
+            {"name": member.name, "role": member.role} for member in self.members
+        ]
         squad_name = self.name
         main_agent = self.main_agent
 
@@ -146,12 +153,16 @@ class Squad:
                 agent_name=member.name,
                 squad_name=squad_name,
                 main_agent=main_agent,
-                all_members=member_names,
+                all_members=member_info,
             )
             member.chat_task.add_tool(member_tool)
 
     def _create_squad_member_tool_for_agent(
-        self, agent_name: str, squad_name: str, main_agent: str, all_members: list[str]
+        self,
+        agent_name: str,
+        squad_name: str,
+        main_agent: str,
+        all_members: list[dict],
     ) -> callable:
         """Create a squad member listing tool for a specific agent."""
 
@@ -160,7 +171,7 @@ class Squad:
             List all members in your squad.
 
             Returns:
-                Dictionary with squad information
+                Dictionary with squad information including member names and roles
             """
             return {
                 "success": True,
@@ -173,7 +184,7 @@ class Squad:
 
         list_squad_members.__name__ = f"list_squad_members"
         list_squad_members.__doc__ = (
-            f"List all members in your squad. You are {agent_name}."
+            f"List all members in your squad with their roles. You are {agent_name}."
         )
         return list_squad_members
 

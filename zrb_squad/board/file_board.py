@@ -30,7 +30,12 @@ class FileBoard(AnyBoard):
             file_path: Path to the JSON file for storage
         """
         self.file_path = os.path.expanduser(file_path)
+        self._valid_members: list[str] = []
         self._ensure_file_exists()
+
+    def set_valid_members(self, members: list[str]) -> None:
+        """Set the list of valid member names for validation."""
+        self._valid_members = members
 
     def _ensure_file_exists(self) -> None:
         """Ensure the storage file exists with proper permissions."""
@@ -146,6 +151,19 @@ class FileBoard(AnyBoard):
         self, assigner: str, assignee: str, task_name: str, description: str
     ) -> Story:
         """Assign a new task to a squad member."""
+        # Validate assigner and assignee are valid member names
+        if self._valid_members:
+            if assigner not in self._valid_members:
+                raise ValueError(
+                    f"Invalid assigner '{assigner}'. "
+                    f"Must be one of: {', '.join(self._valid_members)}"
+                )
+            if assignee not in self._valid_members:
+                raise ValueError(
+                    f"Invalid assignee '{assignee}'. "
+                    f"Must be one of: {', '.join(self._valid_members)}"
+                )
+
         full_description = f"{task_name}: {description}"
         story = Story(
             assignee=assignee, assigner=assigner, description=full_description
