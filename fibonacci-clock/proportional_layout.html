@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Proportional Fibonacci Layout</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        
+        .pattern {
+            font-family: monospace;
+            background: #000;
+            color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+            line-height: 1.2;
+            font-size: 18px;
+            text-align: center;
+        }
+        
+        .proportional-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr 5fr;
+            grid-template-rows: 1fr 1fr 3fr 3fr 3fr;
+            gap: 4px;
+            width: 400px;
+            height: 400px;
+            margin: 20px auto;
+            border: 2px solid #333;
+            padding: 10px;
+        }
+        
+        .cell {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 20px;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+        
+        .square-1 { background: #ff4444; }
+        .square-2 { background: #44ff44; }
+        .square-3 { background: #4444ff; }
+        .square-5 { background: #ffff44; color: #333; }
+        
+        .explanation {
+            background: #f0f0f0;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        
+        .css-example {
+            background: #2d2d2d;
+            color: #fff;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Proportional Fibonacci Square Layout</h1>
+        
+        <div class="pattern">
+            1 22 55555<br>
+            1 22 55555<br>
+            333  55555<br>
+            333  55555<br>
+            333  55555
+        </div>
+        
+        <div class="explanation">
+            <h2>Interpretation</h2>
+            <p>The pattern shows <strong>relative proportions</strong>, not a literal grid:</p>
+            <ul>
+                <li>Square 1: Size = 1 unit</li>
+                <li>Square 2: Size = 2 units (2× Square 1)</li>
+                <li>Square 3: Size = 3 units (3× Square 1)</li>
+                <li>Square 5: Size = 5 units (5× Square 1)</li>
+            </ul>
+            <p>The arrangement creates a rectangle with aspect ratio approximately 8:5.</p>
+        </div>
+        
+        <h2>Proportional Grid Implementation</h2>
+        <div class="proportional-grid">
+            <div class="cell square-1" style="grid-column: 1; grid-row: 1;">1</div>
+            <div class="cell square-2" style="grid-column: 2; grid-row: 1 / span 2;">2</div>
+            <div class="cell square-5" style="grid-column: 3; grid-row: 1 / span 5;">5</div>
+            
+            <div class="cell square-1" style="grid-column: 1; grid-row: 2;">1</div>
+            
+            <div class="cell square-3" style="grid-column: 1 / span 2; grid-row: 3 / span 3;">3</div>
+        </div>
+        
+        <div class="explanation">
+            <h3>CSS Grid Solution</h3>
+            <p>Use fractional units (fr) to create proportional sizes:</p>
+            <div class="css-example">
+.fibonacci-grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr 5fr;  /* 1:2:5 ratio */
+    grid-template-rows: 1fr 1fr 3fr 3fr 3fr; /* 1:1:3:3:3 = total 11 */
+    gap: 4px;
+    aspect-ratio: 8/5; /* Approximately matches pattern */
+    max-width: 400px;
+}
+
+/* Square 1 (first) - top-left */
+.fib-square[data-index="0"] {
+    grid-column: 1;
+    grid-row: 1;
+}
+
+/* Square 2 - middle-top, 2 units tall */
+.fib-square[data-index="2"] {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+}
+
+/* Square 5 - right side, 5 units tall */
+.fib-square[data-index="4"] {
+    grid-column: 3;
+    grid-row: 1 / span 5;
+}
+
+/* Square 1 (second) - left, row 2 */
+.fib-square[data-index="1"] {
+    grid-column: 1;
+    grid-row: 2;
+}
+
+/* Square 3 - bottom-left, spans columns 1-2, rows 3-5 */
+.fib-square[data-index="3"] {
+    grid-column: 1 / span 2;
+    grid-row: 3 / span 3;
+}
+            </div>
+            
+            <p><strong>Note:</strong> This creates a non-square container (8:5 aspect ratio) that matches the pattern's proportions.</p>
+        </div>
+    </div>
+</body>
+</html>

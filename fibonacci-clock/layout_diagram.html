@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fibonacci Layout Diagram</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .diagram-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .grid-explanation {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .visual-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 80px);
+            grid-template-rows: repeat(3, 80px);
+            gap: 5px;
+            margin: 20px 0;
+        }
+        .cell {
+            border: 1px solid #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .square-1 { background-color: #ff9999; }
+        .square-2 { background-color: #99ff99; }
+        .square-3 { background-color: #9999ff; }
+        .square-5 { background-color: #ffff99; }
+        
+        .code-example {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+        
+        .layout-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        .layout-table th, .layout-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .layout-table th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <div class="diagram-container">
+        <h1>Fibonacci Clock Layout Specification</h1>
+        
+        <div class="grid-explanation">
+            <h2>Requested Layout: "1 2 / 1   5 / 3"</h2>
+            <p>This represents a grid where squares are arranged to match their Fibonacci number labels:</p>
+            
+            <div class="visual-grid">
+                <!-- Row 1 -->
+                <div class="cell square-1" style="grid-column: 1; grid-row: 1;">1</div>
+                <div class="cell square-2" style="grid-column: 2 / span 2; grid-row: 1;">2</div>
+                <div class="cell" style="grid-column: 4; grid-row: 1;"></div>
+                
+                <!-- Row 2 -->
+                <div class="cell square-1" style="grid-column: 1; grid-row: 2;">1</div>
+                <div class="cell square-5" style="grid-column: 2 / span 2; grid-row: 2 / span 2;">5</div>
+                <div class="cell" style="grid-column: 4; grid-row: 2;"></div>
+                
+                <!-- Row 3 -->
+                <div class="cell square-3" style="grid-column: 1 / span 3; grid-row: 3;">3</div>
+                <div class="cell" style="grid-column: 4; grid-row: 3;"></div>
+            </div>
+            
+            <p><strong>Note:</strong> This uses a 4x3 grid to accommodate the sizes properly.</p>
+        </div>
+        
+        <h2>Alternative 3x3 Grid Layout</h2>
+        <p>If using a 3x3 grid (as in the current implementation), here's how to interpret:</p>
+        
+        <div class="visual-grid" style="grid-template-columns: repeat(3, 80px);">
+            <!-- Row 1 -->
+            <div class="cell square-1" style="grid-column: 1; grid-row: 1;">1</div>
+            <div class="cell square-2" style="grid-column: 2 / span 2; grid-row: 1;">2</div>
+            
+            <!-- Row 2 -->
+            <div class="cell square-1" style="grid-column: 1; grid-row: 2;">1</div>
+            <div class="cell square-5" style="grid-column: 2 / span 2; grid-row: 2 / span 2;">5</div>
+            
+            <!-- Row 3 -->
+            <div class="cell square-3" style="grid-column: 1 / span 3; grid-row: 3;">3</div>
+        </div>
+        
+        <h2>Square Specifications</h2>
+        <table class="layout-table">
+            <tr>
+                <th>Fibonacci Value</th>
+                <th>Grid Size</th>
+                <th>Position</th>
+                <th>CSS Grid Area</th>
+            </tr>
+            <tr>
+                <td>1 (first)</td>
+                <td>1×1</td>
+                <td>Top-left</td>
+                <td>grid-column: 1; grid-row: 1;</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>2×1</td>
+                <td>Top-right</td>
+                <td>grid-column: 2 / span 2; grid-row: 1;</td>
+            </tr>
+            <tr>
+                <td>1 (second)</td>
+                <td>1×1</td>
+                <td>Middle-left</td>
+                <td>grid-column: 1; grid-row: 2;</td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td>2×2</td>
+                <td>Middle-right & Bottom-right</td>
+                <td>grid-column: 2 / span 2; grid-row: 2 / span 2;</td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>3×1</td>
+                <td>Bottom</td>
+                <td>grid-column: 1 / span 3; grid-row: 3;</td>
+            </tr>
+        </table>
+        
+        <h2>CSS Implementation Guide</h2>
+        <div class="code-example">
+/* Current 3x3 grid container */
+.fibonacci-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 10px;
+    aspect-ratio: 1;
+}
+
+/* Square 1 (first) - top-left */
+.fib-square[data-index="0"] {
+    grid-column: 1;
+    grid-row: 1;
+}
+
+/* Square 2 - top-right (2 units wide) */
+.fib-square[data-index="2"] {
+    grid-column: 2 / span 2;
+    grid-row: 1;
+}
+
+/* Square 1 (second) - middle-left */
+.fib-square[data-index="1"] {
+    grid-column: 1;
+    grid-row: 2;
+}
+
+/* Square 5 - middle-right (2x2 units) */
+.fib-square[data-index="4"] {
+    grid-column: 2 / span 2;
+    grid-row: 2 / span 2;
+}
+
+/* Square 3 - bottom (3 units wide) */
+.fib-square[data-index="3"] {
+    grid-column: 1 / span 3;
+    grid-row: 3;
+}
+        </div>
+        
+        <h2>Important Notes</h2>
+        <ul>
+            <li>The grid uses 3 columns and 3 rows total</li>
+            <li>Square 5 occupies a 2×2 area (columns 2-3, rows 2-3)</li>
+            <li>Square 3 occupies a 3×1 area (all columns, row 3)</li>
+            <li>Square 2 occupies a 2×1 area (columns 2-3, row 1)</li>
+            <li>The two Square 1's are both 1×1 in different positions</li>
+            <li>Make sure the squares visually appear proportional to their Fibonacci values</li>
+        </ul>
+        
+        <h2>Testing the Layout</h2>
+        <p>After implementing, test by:</p>
+        <ol>
+            <li>Checking that each square's visual size matches its Fibonacci number</li>
+            <li>Verifying no overlapping or gaps between squares</li>
+            <li>Testing responsive behavior at different screen sizes</li>
+            <li>Ensuring colors still apply correctly to each square</li>
+        </ol>
+    </div>
+</body>
+</html>

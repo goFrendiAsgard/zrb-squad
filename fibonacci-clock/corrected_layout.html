@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Corrected Fibonacci Layout</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .pattern-display {
+            font-family: monospace;
+            background: #000;
+            color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+            line-height: 1.2;
+            font-size: 18px;
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(8, 40px);
+            grid-template-rows: repeat(5, 40px);
+            gap: 2px;
+            margin: 20px 0;
+        }
+        .cell {
+            border: 1px solid #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        .square-1 { background: #ff9999; }
+        .square-2 { background: #99ff99; }
+        .square-3 { background: #9999ff; }
+        .square-5 { background: #ffff99; }
+        
+        .explanation {
+            background: #f0f0f0;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Fibonacci Clock Layout Analysis</h1>
+        
+        <div class="explanation">
+            <h2>Pattern: <span class="pattern-display">1 22 55555<br>1 22 55555<br>333  55555<br>333  55555<br>333  55555</span></h2>
+            
+            <p>This appears to be an 8×5 ASCII representation where:</p>
+            <ul>
+                <li>Each digit represents which square occupies that position</li>
+                <li>"1" = Square 1 (1×1)</li>
+                <li>"22" = Square 2 (2×2 shown horizontally)</li>
+                <li>"333" = Square 3 (3×3 shown vertically)</li>
+                <li>"55555" = Square 5 (5×5 shown as 5 columns wide, 5 rows tall)</li>
+            </ul>
+        </div>
+        
+        <h2>Visual Representation (8×5 Grid)</h2>
+        <div class="grid-container">
+            <!-- Row 1 -->
+            <div class="cell square-1">1</div>
+            <div class="cell square-2">2</div>
+            <div class="cell square-2">2</div>
+            <div class="cell square-5">5</div>
+            <div class="cell square-5">5</div>
+            <div class="cell square-5">5</div>
+            <div class="cell square-5">5</div>
+            <div class="cell square-5">5</div>
+            
+            <!-- Row 2 -->
+            <div class="cell square-1">1</div>
+            <div class="cell square-2">2</div>
+            <div class="cell square-2">2</div>
+            <div class="cell square-5">5</div>
+            <div class="cell square-5">5</div>
+            <div class="cell square-5">5</div>
+            <div class="cell square-5">5</div>
+            <div class="cell square-5">5</div>
+            
+            <!-- Row 3 -->
+            <div class="cell square-3">3</div>
+            <div class="cell square-3">3</div>
+            <div class="cell square-3">3</div>
+            <div class="cell"></div>
+            <div class="cell square-5">5</div>
+            <div class="cell square-5">5</div>
+            <div class="cell square-5">5</div>
+            <div class="cell square-5">5</div>
+            <div class="cell square-5">5</div>
+            
+            <!-- Row 4 -->
+            <div class="cell square-3">3</div>
+            <div class="cell square-3">3</div>
+            <div class="cell square-3">3</div>
+            <div class="cell"></div>
+            <div class="cell square-5">5</div>
+            <div class="cell square-5">5</div>
+            <div class="cell square-5">5</div>
+            <div class="cell square-5">5</div>
+            <div class="cell square-5">5</div>
+            
+            <!-- Row 5 -->
+            <div class="cell square-3">3</div>
+            <div class="cell square-3">3</div>
+            <div class="cell square-3">3</div>
+            <div class="cell"></div>
+            <div class="cell square-5">5</div>
+            <div class="cell square-5">5</div>
+            <div class="cell square-5">5</div>
+            <div class="cell square-5">5</div>
+            <div class="cell square-5">5</div>
+        </div>
+        
+        <div class="explanation">
+            <h3>Problem: This creates an 8×5 rectangle, not a square!</h3>
+            <p>The pattern shows 8 columns × 5 rows, but we need a square container for aesthetic balance.</p>
+            
+            <h3>Alternative Interpretation:</h3>
+            <p>Maybe the pattern is meant to be <strong>5×5</strong> with Square 5 being 3×5 (not 5×5):</p>
+            <ul>
+                <li>Square 1: 1×1 (top-left)</li>
+                <li>Square 2: 2×2 (top-middle)</li>
+                <li>Square 1 (second): 1×1 (row 2, col 1)</li>
+                <li>Square 3: 3×3 (bottom-left)</li>
+                <li>Square 5: 2×5 (right side, columns 4-5, rows 1-5)</li>
+            </ul>
+            <p>This fits in a 5×5 grid perfectly!</p>
+        </div>
+        
+        <h2>Recommended Implementation (5×5 Grid)</h2>
+        <div style="background: #2d2d2d; color: #fff; padding: 15px; border-radius: 5px;">
+            <pre style="margin: 0;">
+.fibonacci-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(5, 1fr);
+    gap: 4px;
+    aspect-ratio: 1;
+}
+
+/* Square 1 (first) */
+.fib-square[data-index="0"] { grid-column: 1; grid-row: 1; }
+
+/* Square 2 (2×2) */
+.fib-square[data-index="2"] { grid-column: 2 / span 2; grid-row: 1 / span 2; }
+
+/* Square 1 (second) */
+.fib-square[data-index="1"] { grid-column: 1; grid-row: 2; }
+
+/* Square 3 (3×3) */
+.fib-square[data-index="3"] { grid-column: 1 / span 3; grid-row: 3 / span 3; }
+
+/* Square 5 (2×5) */
+.fib-square[data-index="4"] { grid-column: 4 / span 2; grid-row: 1 / span 5; }
+            </pre>
+        </div>
+        
+        <p><strong>Note to Charlie:</strong> Please implement the 5×5 grid version above. This creates a square container where each Fibonacci square's size visually represents its number value.</p>
+    </div>
+</body>
+</html>

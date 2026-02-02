@@ -1,0 +1,180 @@
+/* ===== CLOCK CONTROLS - FIXED ===== */
+.clock-controls {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin: 1.5rem 0;
+}
+
+.btn {
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: var(--border-radius);
+    background: linear-gradient(to right, var(--secondary-color), var(--primary-color));
+    color: var(--white);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: var(--shadow);
+    min-width: 140px;
+    justify-content: center;
+}
+
+.btn:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-hover);
+    background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+}
+
+.btn:active {
+    transform: translateY(-1px);
+}
+
+.btn i {
+    font-size: 1.1rem;
+}
+
+#toggle-format {
+    background: linear-gradient(to right, #9b59b6, #8e44ad);
+}
+
+#toggle-format:hover {
+    background: linear-gradient(to right, #8e44ad, #9b59b6);
+}
+
+#toggle-animation {
+    background: linear-gradient(to right, #1abc9c, #16a085);
+}
+
+#toggle-animation:hover {
+    background: linear-gradient(to right, #16a085, #1abc9c);
+}
+
+#reset-clock {
+    background: linear-gradient(to right, #e74c3c, #c0392b);
+}
+
+#reset-clock:hover {
+    background: linear-gradient(to right, #c0392b, #e74c3c);
+}
+
+/* ===== COLOR LEGEND - ADDED ===== */
+.legend {
+    background: var(--white);
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    margin: 1.5rem 0;
+    box-shadow: var(--shadow);
+}
+
+.legend h3 {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.4rem;
+}
+
+.legend h3 i {
+    color: #9b59b6;
+}
+
+.legend-items {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0.8rem;
+    background: var(--light-color);
+    border-radius: 6px;
+    transition: var(--transition);
+}
+
+.legend-item:hover {
+    background: #d5dbdb;
+    transform: translateX(5px);
+}
+
+.color-swatch {
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    display: inline-block;
+}
+
+.color-swatch.red {
+    background-color: var(--fib-hour);
+}
+
+.color-swatch.green {
+    background-color: var(--fib-minute);
+}
+
+.color-swatch.blue {
+    background-color: var(--fib-both);
+}
+
+.color-swatch.white {
+    background-color: var(--fib-inactive);
+    border-color: var(--fib-border);
+}
+
+/* ===== RESPONSIVE FIXES ===== */
+@media (max-width: 768px) {
+    .clock-controls {
+        flex-direction: row; /* Keep buttons horizontal on tablets */
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .btn {
+        min-width: 120px;
+        padding: 0.7rem 1.2rem;
+    }
+    
+    .legend-items {
+        grid-template-columns: 1fr; /* Stack legend items vertically on mobile */
+    }
+}
+
+@media (max-width: 480px) {
+    .clock-controls {
+        flex-direction: column; /* Stack buttons vertically only on very small screens */
+        align-items: center;
+    }
+    
+    .btn {
+        width: 100%;
+        max-width: 250px;
+    }
+    
+    .legend-items {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Animation feedback classes */
+.pulse-feedback {
+    animation: pulse 0.3s ease-in-out;
+}
+
+.reset-feedback {
+    animation: pulse 0.5s ease-in-out;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}

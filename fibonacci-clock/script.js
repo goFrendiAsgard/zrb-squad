@@ -1,4 +1,4 @@
-// Fibonacci Clock JavaScript - Fixed Implementation with Correct Time Calculation
+// Fibonacci Clock JavaScript - Corrected for New Layout
 
 $(document).ready(function() {
     console.log("Fibonacci Clock loaded!");
@@ -14,19 +14,20 @@ $(document).ready(function() {
     setInterval(updateDateTime, 1000);
 });
 
-// Fibonacci sequence values [1, 1, 2, 3, 5]
-const FIBONACCI_VALUES = [1, 1, 2, 3, 5];
-
 // Global state
 let is24HourFormat = true;
 let isAnimating = true;
 
-// Initialize the Fibonacci grid with correct layout
+// Fibonacci values in the order needed for our corrected layout:
+// Square 1 (first), Square 1 (second), Square 3, Square 2, Square 5
+const FIBONACCI_VALUES = [1, 1, 3, 2, 5];
+
+// Initialize the Fibonacci grid with corrected layout
 function initFibonacciClock() {
     const grid = $('#fibonacci-grid');
     grid.empty();
     
-    // Create Fibonacci squares with correct indices
+    // Create Fibonacci squares in the correct order for our layout
     FIBONACCI_VALUES.forEach((value, index) => {
         const square = $('<div>').addClass('fib-square');
         
@@ -43,94 +44,55 @@ function initFibonacciClock() {
         grid.append(square);
     });
     
-    console.log("Fibonacci grid initialized with correct layout");
+    console.log("Fibonacci grid initialized with corrected layout");
 }
 
 // Update current date and time
 function updateDateTime() {
     const now = new Date();
     
-    // Get current time
+    // Format time based on current setting
     let hours = now.getHours();
     const minutes = now.getMinutes();
     
-    // Format time display
+    // Convert to 12-hour format if needed
     let displayHours = hours;
     if (!is24HourFormat) {
-        displayHours = hours % 12 || 12;
+        displayHours = hours % 12;
+        if (displayHours === 0) displayHours = 12;
     }
     
-    const timeString = `${String(displayHours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+    // Format time string
+    const timeString = `${displayHours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
     $('#current-time').text(timeString);
     
     // Format date
     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    const formattedDate = now.toLocaleDateString('en-US', options);
-    $('#current-date').text(formattedDate);
+    const dateString = now.toLocaleDateString('en-US', options);
+    $('#current-date').text(dateString);
     
-    // Update year in footer
-    $('#current-year').text(now.getFullYear());
-    
-    // Update Fibonacci squares based on actual time calculation
-    updateFibonacciColors(hours, minutes);
+    // Update Fibonacci representation
+    updateFibonacciTime(hours, minutes);
 }
 
-// Update Fibonacci square colors based on actual time calculation
-function updateFibonacciColors(hours, minutes) {
-    // Convert to Fibonacci clock representation
-    // Fibonacci clock uses 12-hour format (1-12)
-    const fibHours = hours % 12 || 12;
-    
-    // Convert minutes to 5-minute blocks (0-11, where each = 5 minutes)
-    const fibMinutes = Math.floor(minutes / 5);
-    
-    console.log(`Fibonacci Time: ${fibHours} hours, ${fibMinutes} minute blocks (actual: ${minutes} minutes)`);
-    
-    // Calculate which squares represent hours and minutes
-    const hourSquares = calculateFibonacciRepresentation(fibHours);
-    const minuteSquares = calculateFibonacciRepresentation(fibMinutes);
-    
-    // Update each square
-    $('.fib-square').each(function(index) {
-        const square = $(this);
-        
-        // Remove all color classes
-        square.removeClass('fib-hour fib-minute fib-both fib-inactive');
-        
-        // Determine color based on hour/minute representation
-        const isHour = hourSquares.includes(index);
-        const isMinute = minuteSquares.includes(index);
-        
-        if (isHour && isMinute) {
-            square.addClass('fib-both'); // Blue - represents both hours and minutes
-        } else if (isHour) {
-            square.addClass('fib-hour'); // Red - represents hours only
-        } else if (isMinute) {
-            square.addClass('fib-minute'); // Green - represents minutes only
-        } else {
-            square.addClass('fib-inactive'); // White - inactive
-        }
-        
-        // Update tooltip
-        updateSquareTooltip(square, index, isHour, isMinute);
-    });
-}
-
-// Calculate which Fibonacci squares represent a given value (1-12 for hours, 0-11 for minutes)
+// Calculate Fibonacci representation for a target number
 function calculateFibonacciRepresentation(target) {
     const squares = [];
     let remaining = target;
     
     // Try to use the largest Fibonacci numbers first (greedy algorithm)
-    // Check each Fibonacci value in reverse order (5, 3, 2, 1, 1)
-    const fibIndices = [4, 3, 2, 1, 0]; // Indices for values [5, 3, 2, 1, 1]
+    // We need to use the original Fibonacci values [5, 3, 2, 1, 1] for calculation
+    // but map them to our layout indices [4, 2, 3, 0, 1]
+    const fibValues = [5, 3, 2, 1, 1];
+    const layoutIndices = [4, 2, 3, 0, 1]; // Maps [5, 3, 2, 1, 1] to our layout indices [4, 2, 3, 0, 1]
     
-    for (const index of fibIndices) {
-        if (remaining >= FIBONACCI_VALUES[index]) {
+    for (let i = 0; i < fibValues.length; i++) {
+        if (remaining >= fibValues[i]) {
+            const layoutIndex = layoutIndices[i];
             // Check if this square is already used (for duplicate value 1)
-            if (!squares.includes(index)) {
-                squares.push(index);
-                remaining -= FIBONACCI_VALUES[index];
+            if (!squares.includes(layoutIndex)) {
+                squares.push(layoutIndex);
+                remaining -= fibValues[i];
             }
         }
         
@@ -155,46 +117,73 @@ function findAlternativeCombination(target) {
     const squares = [];
     let sum = 0;
     
-    // Try largest squares first
-    const fibIndices = [4, 3, 2, 1, 0]; // [5, 3, 2, 1, 1]
+    // Use original Fibonacci values [5, 3, 2, 1, 1] mapped to layout indices
+    const fibValues = [5, 3, 2, 1, 1];
+    const layoutIndices = [4, 2, 3, 0, 1];
     
-    for (const index of fibIndices) {
-        if (sum + FIBONACCI_VALUES[index] <= target) {
-            if (!squares.includes(index)) {
-                squares.push(index);
-                sum += FIBONACCI_VALUES[index];
+    for (let i = 0; i < fibValues.length; i++) {
+        if (sum + fibValues[i] <= target) {
+            const layoutIndex = layoutIndices[i];
+            // Check if this square is already used (for duplicate value 1)
+            if (!squares.includes(layoutIndex)) {
+                squares.push(layoutIndex);
+                sum += fibValues[i];
             }
-        }
-        
-        if (sum === target) {
-            break;
         }
     }
     
     return squares;
 }
 
-// Update square tooltip with explanation
-function updateSquareTooltip(square, index, isHour, isMinute) {
-    const value = FIBONACCI_VALUES[index];
-    let explanation = `Fibonacci value: ${value}`;
+// Update Fibonacci time representation
+function updateFibonacciTime(hours, minutes) {
+    // Convert hours to 12-hour format for Fibonacci calculation
+    const hour12 = hours % 12;
+    const hourValue = hour12 === 0 ? 12 : hour12;
     
-    if (isHour && isMinute) {
-        explanation += ` (Represents both hours and minutes)`;
-    } else if (isHour) {
-        explanation += ` (Represents hours)`;
-    } else if (isMinute) {
-        explanation += ` (Represents minutes)`;
-    } else {
-        explanation += ` (Inactive)`;
-    }
+    // Convert minutes to 5-minute blocks (0-11)
+    const minuteValue = Math.floor(minutes / 5);
     
-    square.attr('title', explanation);
+    console.log(`Time: ${hours}:${minutes} -> Hour value: ${hourValue}, Minute value: ${minuteValue}`);
+    
+    // Calculate which squares represent hours and minutes
+    const hourSquares = calculateFibonacciRepresentation(hourValue);
+    const minuteSquares = calculateFibonacciRepresentation(minuteValue);
+    
+    console.log("Hour squares (indices):", hourSquares);
+    console.log("Minute squares (indices):", minuteSquares);
+    
+    // Update all squares
+    $('.fib-square').each(function(index) {
+        const square = $(this);
+        const isHour = hourSquares.includes(index);
+        const isMinute = minuteSquares.includes(index);
+        
+        // Remove all color classes
+        square.removeClass('fib-hour fib-minute fib-both fib-inactive');
+        
+        // Add appropriate color class
+        if (isHour && isMinute) {
+            square.addClass('fib-both');
+            console.log(`Square ${index} (F${square.attr('data-value')}): Both hours and minutes`);
+        } else if (isHour) {
+            square.addClass('fib-hour');
+            console.log(`Square ${index} (F${square.attr('data-value')}): Hours only`);
+        } else if (isMinute) {
+            square.addClass('fib-minute');
+            console.log(`Square ${index} (F${square.attr('data-value')}): Minutes only`);
+        } else {
+            square.addClass('fib-inactive');
+            console.log(`Square ${index} (F${square.attr('data-value')}): Inactive`);
+        }
+    });
+    
+    // Update sequence display
+    $('#sequence-values').text(FIBONACCI_VALUES.join(', '));
 }
 
-// Set up all event listeners
+// Set up event listeners for controls
 function setupEventListeners() {
-    
     // Toggle 12/24 hour format
     $('#toggle-format').click(function() {
         is24HourFormat = !is24HourFormat;
@@ -239,67 +228,30 @@ function setupEventListeners() {
         $(this).addClass('reset-feedback');
         setTimeout(() => {
             $(this).removeClass('reset-feedback');
-        }, 500);
+        }, 300);
         
         console.log("Clock reset");
     });
-    
-    // Footer link interactions
-    $('#github-link').click(function(e) {
-        e.preventDefault();
-        alert('GitHub repository link would open here. Demo feature.');
-        console.log("GitHub link clicked");
-    });
-    
-    $('#documentation-link').click(function(e) {
-        e.preventDefault();
-        alert('Documentation would open here. Demo feature.');
-        console.log("Documentation link clicked");
-    });
-    
-    $('#settings-link').click(function(e) {
-        e.preventDefault();
-        alert('Settings panel would open here. Demo feature.');
-        console.log("Settings link clicked");
-    });
-    
-    // Add CSS for feedback animations
-    $('<style>').text(`
-        .pulse-feedback {
-            animation: pulse 0.3s ease;
-        }
-        .reset-feedback {
-            animation: spin 0.5s ease;
-        }
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-    `).appendTo('head');
 }
 
 // Test function to verify the algorithm
 function testFibonacciAlgorithm() {
-    console.log("Testing Fibonacci algorithm with sample times:");
-    
-    const testTimes = [
-        { hours: 1, minutes: 0, expected: "1:00" },
-        { hours: 5, minutes: 0, expected: "5:00" },
-        { hours: 8, minutes: 0, expected: "8:00" },
-        { hours: 12, minutes: 0, expected: "12:00" },
-        { hours: 3, minutes: 25, expected: "3:25" },
-        { hours: 7, minutes: 50, expected: "7:50" }
+    const testCases = [
+        { time: "1:00", hour: 1, minute: 0, expected: "Hour: 1, Minute: 0" },
+        { time: "5:00", hour: 5, minute: 0, expected: "Hour: 5, Minute: 0" },
+        { time: "8:00", hour: 8, minute: 0, expected: "Hour: 8, Minute: 0" },
+        { time: "12:00", hour: 12, minute: 0, expected: "Hour: 12, Minute: 0" },
+        { time: "3:25", hour: 3, minute: 5, expected: "Hour: 3, Minute: 5" },
+        { time: "7:50", hour: 7, minute: 10, expected: "Hour: 7, Minute: 10" }
     ];
     
-    testTimes.forEach(test => {
-        const hourSquares = calculateFibonacciRepresentation(test.hours % 12 || 12);
-        const minuteSquares = calculateFibonacciRepresentation(Math.floor(test.minutes / 5));
-        
-        console.log(`${test.expected}: Hours=${hourSquares.map(i => FIBONACCI_VALUES[i])}, Minutes=${minuteSquares.map(i => FIBONACCI_VALUES[i])}`);
+    console.log("Testing Fibonacci algorithm:");
+    testCases.forEach(test => {
+        const hourSquares = calculateFibonacciRepresentation(test.hour);
+        const minuteSquares = calculateFibonacciRepresentation(test.minute);
+        console.log(`${test.expected}: Hours=${hourSquares}, Minutes=${minuteSquares}`);
     });
 }
 
-// Run test on load
-$(document).ready(function() {
-    setTimeout(testFibonacciAlgorithm, 1000);
-});
+// Run tests on load
+testFibonacciAlgorithm();
