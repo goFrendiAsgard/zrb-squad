@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quick Fibonacci Test</title>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-result { margin: 10px 0; padding: 10px; border: 1px solid #ccc; }
+        .pass { background: #d4edda; }
+        .fail { background: #f8d7da; }
+    </style>
+</head>
+<body>
+    <h1>Fibonacci Clock Quick Test</h1>
+    
+    <div id="results"></div>
+    
+    <script>
+        $(document).ready(function() {
+            const results = $('#results');
+            
+            // Test 1: Check if CSS file exists and has correct selectors
+            $.ajax({
+                url: 'style.css',
+                dataType: 'text',
+                success: function(css) {
+                    const test1 = $('<div>').addClass('test-result');
+                    
+                    // Check for data-index selectors
+                    const hasDataIndexSelectors = css.includes('[data-index="0"]') && 
+                                                  css.includes('[data-index="4"]');
+                    
+                    // Check for color classes
+                    const hasColorClasses = css.includes('.fib-hour') && 
+                                           css.includes('.fib-minute') && 
+                                           css.includes('.fib-both') && 
+                                           css.includes('.fib-inactive');
+                    
+                    test1.addClass(hasDataIndexSelectors && hasColorClasses ? 'pass' : 'fail');
+                    test1.html('<strong>Test 1: CSS Structure</strong><br>' +
+                              `Data-index selectors: ${hasDataIndexSelectors ? '✓' : '✗'}<br>` +
+                              `Color classes: ${hasColorClasses ? '✓' : '✗'}`);
+                    results.append(test1);
+                    
+                    // Test 2: Check JavaScript algorithm
+                    const test2 = $('<div>').addClass('test-result');
+                    
+                    // Load and test the algorithm
+                    $.ajax({
+                        url: 'script.js',
+                        dataType: 'text',
+                        success: function(js) {
+                            const hasCalculateFunction = js.includes('calculateFibonacciTime');
+                            const hasUpdateColorsFunction = js.includes('updateFibonacciColors');
+                            const hasFibonacciValues = js.includes('FIBONACCI_VALUES');
+                            
+                            test2.addClass(hasCalculateFunction && hasUpdateColorsFunction && hasFibonacciValues ? 'pass' : 'fail');
+                            test2.html('<strong>Test 2: JavaScript Algorithm</strong><br>' +
+                                      `calculateFibonacciTime: ${hasCalculateFunction ? '✓' : '✗'}<br>` +
+                                      `updateFibonacciColors: ${hasUpdateColorsFunction ? '✓' : '✗'}<br>` +
+                                      `FIBONACCI_VALUES: ${hasFibonacciValues ? '✓' : '✗'}`);
+                            results.append(test2);
+                            
+                            // Test 3: Check HTML structure
+                            const test3 = $('<div>').addClass('test-result');
+                            $.ajax({
+                                url: 'index.html',
+                                dataType: 'text',
+                                success: function(html) {
+                                    const hasFibonacciGrid = html.includes('id="fibonacci-grid"');
+                                    const hasFiveSquares = (html.match(/fib-square/g) || []).length >= 5;
+                                    const hasTimeDisplay = html.includes('id="current-time"');
+                                    
+                                    test3.addClass(hasFibonacciGrid && hasFiveSquares && hasTimeDisplay ? 'pass' : 'fail');
+                                    test3.html('<strong>Test 3: HTML Structure</strong><br>' +
+                                              `Fibonacci grid: ${hasFibonacciGrid ? '✓' : '✗'}<br>` +
+                                              `5+ squares: ${hasFiveSquares ? '✓' : '✗'}<br>` +
+                                              `Time display: ${hasTimeDisplay ? '✓' : '✗'}`);
+                                    results.append(test3);
+                                    
+                                    // Summary
+                                    const summary = $('<div>').addClass('test-result').css('font-weight', 'bold');
+                                    const allPassed = hasDataIndexSelectors && hasColorClasses && 
+                                                     hasCalculateFunction && hasUpdateColorsFunction && hasFibonacciValues &&
+                                                     hasFibonacciGrid && hasFiveSquares && hasTimeDisplay;
+                                    
+                                    summary.addClass(allPassed ? 'pass' : 'fail');
+                                    summary.html(allPassed ? 
+                                        '✅ All basic tests passed! The Fibonacci Clock should be working.' :
+                                        '⚠️ Some tests failed. Check the implementation.');
+                                    results.append(summary);
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

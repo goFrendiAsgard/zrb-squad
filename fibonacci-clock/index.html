@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Fibonacci Clock - A mathematical timepiece that displays time using the Fibonacci sequence">
+    <meta name="keywords" content="Fibonacci, clock, time, mathematics, jQuery, interactive">
+    <meta name="author" content="Fibonacci Clock Project">
+    <meta property="og:title" content="Fibonacci Clock">
+    <meta property="og:description" content="An interactive clock that displays time using Fibonacci sequence squares">
+    <meta property="og:type" content="website">
+    <title>Fibonacci Clock</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header role="banner">
+            <h1><i class="fas fa-clock" aria-hidden="true"></i> Fibonacci Clock</h1>
+            <p class="subtitle">A mathematical timepiece based on the Fibonacci sequence</p>
+        </header>
+
+        <main role="main">
+            <div class="clock-container">
+                <div class="clock-display" role="region" aria-label="Fibonacci Clock Display">
+                    <div class="time-display" role="timer" aria-live="polite">
+                        <span id="current-time" aria-label="Current time">00:00:00</span>
+                        <span id="current-date" aria-label="Current date">Monday, January 1, 2024</span>
+                    </div>
+                    
+                    <div class="fibonacci-grid" id="fibonacci-grid" role="grid" aria-label="Fibonacci squares representing time">
+                        <!-- Fibonacci squares with data attributes -->
+                        <div class="fib-square" data-fib-value="1" data-position="1" role="gridcell" 
+                             aria-label="Fibonacci square 1, value 1" tabindex="0">
+                            <span class="square-value">1</span>
+                        </div>
+                        <div class="fib-square" data-fib-value="1" data-position="2" role="gridcell" 
+                             aria-label="Fibonacci square 2, value 1" tabindex="0">
+                            <span class="square-value">1</span>
+                        </div>
+                        <div class="fib-square" data-fib-value="2" data-position="3" role="gridcell" 
+                             aria-label="Fibonacci square 3, value 2" tabindex="0">
+                            <span class="square-value">2</span>
+                        </div>
+                        <div class="fib-square" data-fib-value="3" data-position="4" role="gridcell" 
+                             aria-label="Fibonacci square 4, value 3" tabindex="0">
+                            <span class="square-value">3</span>
+                        </div>
+                        <div class="fib-square" data-fib-value="5" data-position="5" role="gridcell" 
+                             aria-label="Fibonacci square 5, value 5" tabindex="0">
+                            <span class="square-value">5</span>
+                        </div>
+                    </div>
+                    
+                    <div class="clock-controls" role="toolbar" aria-label="Clock controls">
+                        <button id="toggle-format" class="btn" aria-label="Toggle between 12 and 24 hour format">
+                            <i class="fas fa-exchange-alt" aria-hidden="true"></i> 12/24h
+                        </button>
+                        <button id="toggle-animation" class="btn" aria-label="Play or pause clock animation">
+                            <i class="fas fa-play" aria-hidden="true"></i> Play/Pause
+                        </button>
+                        <button id="reset-clock" class="btn" aria-label="Reset clock to current time">
+                            <i class="fas fa-redo" aria-hidden="true"></i> Reset
+                        </button>
+                        <button id="color-mode" class="btn" aria-label="Change color mode">
+                            <i class="fas fa-palette" aria-hidden="true"></i> Colors
+                        </button>
+                        <select id="speed-control" class="btn" aria-label="Animation speed control">
+                            <option value="1000">1x Speed</option>
+                            <option value="500">2x Speed</option>
+                            <option value="2000">0.5x Speed</option>
+                        </select>
+                        <button id="fullscreen" class="btn" aria-label="Toggle fullscreen mode">
+                            <i class="fas fa-expand" aria-hidden="true"></i> Fullscreen
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="info-panel" role="complementary" aria-label="Fibonacci Clock information">
+                    <h2><i class="fas fa-info-circle" aria-hidden="true"></i> About Fibonacci Clock</h2>
+                    <p>The Fibonacci Clock represents time using squares sized according to the Fibonacci sequence (1, 1, 2, 3, 5).</p>
+                    
+                    <div class="time-explanation">
+                        <h3><i class="fas fa-lightbulb" aria-hidden="true"></i> How to Read</h3>
+                        <ul>
+                            <li>Red squares represent <strong>hours</strong></li>
+                            <li>Green squares represent <strong>minutes</strong></li>
+                            <li>Blue squares represent <strong>both</strong></li>
+                            <li>White squares are <strong>inactive</strong></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="sequence-display">
+                        <h3><i class="fas fa-calculator" aria-hidden="true"></i> Fibonacci Sequence</h3>
+                        <div id="sequence-values" aria-live="polite">1, 1, 2, 3, 5</div>
+                    </div>
+                    
+                    <div class="legend" role="region" aria-label="Color legend">
+                        <h3><i class="fas fa-key" aria-hidden="true"></i> Color Legend</h3>
+                        <div class="legend-items">
+                            <div class="legend-item">
+                                <span class="color-swatch red" aria-label="Red color"></span>
+                                <span>Hours</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="color-swatch green" aria-label="Green color"></span>
+                                <span>Minutes</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="color-swatch blue" aria-label="Blue color"></span>
+                                <span>Both</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="color-swatch white" aria-label="White color"></span>
+                                <span>Inactive</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer role="contentinfo">
+            <p>Fibonacci Clock &copy; <span id="current-year">2024</span> | Created with jQuery</p>
+            <div class="footer-links">
+                <a href="#" id="github-link" aria-label="View on GitHub"><i class="fab fa-github" aria-hidden="true"></i> GitHub</a>
+                <a href="#" id="documentation-link" aria-label="View documentation"><i class="fas fa-book" aria-hidden="true"></i> Documentation</a>
+                <a href="#" id="settings-link" aria-label="Open settings"><i class="fas fa-cog" aria-hidden="true"></i> Settings</a>
+                <a href="#" id="accessibility-link" aria-label="Accessibility options"><i class="fas fa-universal-access" aria-hidden="true"></i> Accessibility</a>
+            </div>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
